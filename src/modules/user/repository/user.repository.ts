@@ -8,6 +8,7 @@ import {
 import { UserEntity } from '@/modules/user/domain/entities/user.entity';
 import { UserRepositoryInterface } from '@/modules/user/domain/repository/user.repository.interface';
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -78,8 +79,72 @@ export class UserRepository implements UserRepositoryInterface {
     if (!raw) return null;
     return this.toDomain(raw);
   }
-  find(request: PageRequest<UserFilter>): Promise<PageResponse<UserEntity>> {
-    throw new Error('Method not implemented.');
+  // find(request: PageRequest<UserFilter>): Promise<PageResponse<UserEntity>> {
+  //   throw new Error('Method not implemented.');
+  // }
+
+  async find(
+    query: PageRequest<UserFilter>,
+  ): Promise<PageResponse<UserEntity>> {
+    const {
+      filter = {},
+      order = 'desc',
+      orderBy = 'createdAt',
+      limit = 15,
+      page = 1,
+    } = query;
+
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.UserWhereInput = {
+      deletedAt: null,
+      // se tiver role de admin para excluir:
+      // role: { not: 'ADMIN' },
+    };
+
+    const OR: Prisma.UserWhereInput[] = [];
+
+    if (filter.name) {
+      OR.push({ name: { contains: filter.name } });
+    } else if (filter.search) {
+      OR.push({ name: { contains: filter.search } });
+    }
+
+    if (filter.registration) {
+      OR.push({ registration: { contains: filter.registration } });
+    } else if (filter.search) {
+      OR.push({ registration: { contains: filter.search } });
+    }
+
+    if (filter.email) {
+      OR.push({ email: { contains: filter.email } });
+    } else if (filter.search) {
+      OR.push({ email: { contains: filter.search } });
+    }
+
+    if (OR.length > 0) {
+      where.OR = OR;
+    }
+
+    const [users, total] = await Promise.all([
+      this.repository.user.findMany({
+        where,
+        orderBy: { [orderBy]: order },
+        skip,
+        take: Number(limit),
+      }),
+      this.repository.user.count({ where }),
+    ]);
+
+    return {
+      result: users.map((user) => this.toDomain(user)),
+      pagination: {
+        page: Number(page),
+        totalPages: Math.ceil(total / Number(limit)),
+        size: Number(limit),
+        total,
+      },
+    };
   }
 
   private toDomain(raw: any): UserEntity {

@@ -7,11 +7,14 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dtos/create-user.dto';
+import { FindUsersQueryDto } from '../dtos/find-users-query.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { CreateUserUseCase } from '../use-cases/create-user/create-user.use-case';
 import { DeleteUserUseCase } from '../use-cases/delete-user/delete-user.use-case';
+import { FindAllUserUseCase } from '../use-cases/find-all-user/find-all-user.use-case';
 import { FindByIdUserUseCase } from '../use-cases/find-by-id-user/find-by-id-user.use-case';
 import { UpdateUserUseCase } from '../use-cases/update-user/update-user.use-case';
 
@@ -24,6 +27,7 @@ export class UserController {
     private readonly findByIdUserUseCase: FindByIdUserUseCase,
     private readonly deleteUserUseCase: DeleteUserUseCase,
     private readonly updateUserUseCase: UpdateUserUseCase,
+    private readonly findAllUserUseCase: FindAllUserUseCase,
   ) {}
 
   // Apenas ADMIN pode criar usuários
@@ -76,21 +80,21 @@ export class UserController {
   }
 
   //   // Apenas ADMIN pode listar todos
-  //   @Get()
+  @Get()
   //   @Roles(ROLES.ADMIN, ROLES.CLIENT_ADMIN, ROLES.MANAGER, ROLES.USER)
   //   @ApiOperation({ summary: 'LISTA DE USUARIOS' })
   //   @ApiResponse({ status: 200, description: 'Usuário encontrado' })
   //   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
-  //   async find(@Query() query: FindUsersQueryDto) {
-  //     const filter: any = {};
-  //     for (const key in query) {
-  //       if (key.startsWith('filter[') && key.endsWith(']')) {
-  //         const field = key.slice(7, -1);
-  //         filter[field] = query[key];
-  //       }
-  //     }
-  //     return this.userFacade.find({ ...query, filter });
-  //   }
+  async find(@Query() query: FindUsersQueryDto) {
+    const filter: any = {};
+    for (const key in query) {
+      if (key.startsWith('filter[') && key.endsWith(']')) {
+        const field = key.slice(7, -1);
+        filter[field] = query[key];
+      }
+    }
+    return this.findAllUserUseCase.execute({ ...query, filter });
+  }
 
   @Delete(':id')
   // @ApiParam({ name: 'id', type: String })
