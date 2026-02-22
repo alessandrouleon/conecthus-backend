@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { setupSwagger } from './@shared/docs/swagger/swagger.setup';
 import { DomainExceptionFilter } from './@shared/domain/exception/exception.filter';
 import { AppModule } from './app.module';
 
@@ -11,6 +12,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
+      whitelist: true,
       transformOptions: { enableImplicitConversion: true },
     }),
   );
@@ -24,7 +26,7 @@ async function bootstrap() {
 
   const port = process.env.BACKEND_PORT || 4000;
 
-  // setupSwagger(app);
+  setupSwagger(app);
 
   await app.listen(port);
   console.log(`🚀 Server running on port ${port}`);
