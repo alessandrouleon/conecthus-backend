@@ -16,7 +16,7 @@ export class FindByIdUserUseCase {
     private readonly userRepository: UserRepositoryInterface,
   ) {}
   async execute(id: string): Promise<OutputFindByIdUserUseCaseDto> {
-    const user = await this.userRepository.findOneById(id);
+    const user = await this.userRepository.findById(id);
 
     if (!user) {
       throw new HttpException(

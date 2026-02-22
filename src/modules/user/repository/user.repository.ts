@@ -5,7 +5,10 @@ import {
   UserFilter,
 } from '@/@shared/pagination/pagination.interface';
 
-import { UserEntity } from '@/modules/user/domain/entities/user.entity';
+import {
+  UserEntity,
+  UserIterfaces,
+} from '@/modules/user/domain/entities/user.entity';
 import { UserRepositoryInterface } from '@/modules/user/domain/repository/user.repository.interface';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -15,7 +18,7 @@ export class UserRepository implements UserRepositoryInterface {
   constructor(private readonly repository: PrismaService) {}
 
   async create(entity: UserEntity): Promise<UserEntity> {
-    const raw = await this.repository.user.create({
+    const persistedUser = await this.repository.user.create({
       data: {
         id: entity.id,
         name: entity.name,
@@ -29,11 +32,11 @@ export class UserRepository implements UserRepositoryInterface {
       },
     });
 
-    return this.toDomain(raw);
+    return this.toDomain(persistedUser);
   }
 
   async update(entity: UserEntity): Promise<UserEntity> {
-    const raw = await this.repository.user.update({
+    const updatedUser = await this.repository.user.update({
       where: { id: entity.id },
       data: {
         id: entity.id,
@@ -47,41 +50,40 @@ export class UserRepository implements UserRepositoryInterface {
         deletedAt: entity.deletedAt,
       },
     });
-    return this.toDomain(raw);
+    return this.toDomain(updatedUser);
   }
   async delete(id: string): Promise<UserEntity> {
-    const raw = await this.repository.user.update({
+    const deletedUser = await this.repository.user.update({
       where: { id },
       data: { deletedAt: new Date() },
     });
-    return this.toDomain(raw);
+
+    return this.toDomain(deletedUser);
   }
-  async findOneById(id: string): Promise<UserEntity | null> {
-    const raw = await this.repository.user.findUnique({
+
+  async findById(id: string): Promise<UserEntity | null> {
+    const user = await this.repository.user.findUnique({
       where: { id, deletedAt: null },
     });
-    if (!raw) return null;
-    return this.toDomain(raw);
+    if (!user) return null;
+    return this.toDomain(user);
   }
-  async findByUserRegistration(
-    registration: string,
-  ): Promise<UserEntity | null> {
-    const raw = await this.repository.user.findUnique({
+
+  async findByRegistration(registration: string): Promise<UserEntity | null> {
+    const user = await this.repository.user.findUnique({
       where: { registration, deletedAt: null },
     });
-    if (!raw) return null;
-    return this.toDomain(raw);
+    if (!user) return null;
+    return this.toDomain(user);
   }
+
   async findByEmail(email: string): Promise<UserEntity | null> {
-    const raw = await this.repository.user.findUnique({
+    const user = await this.repository.user.findUnique({
       where: { email, deletedAt: null },
     });
-    if (!raw) return null;
-    return this.toDomain(raw);
+    if (!user) return null;
+    return this.toDomain(user);
   }
-  // find(request: PageRequest<UserFilter>): Promise<PageResponse<UserEntity>> {
-  //   throw new Error('Method not implemented.');
-  // }
 
   async find(
     query: PageRequest<UserFilter>,
@@ -98,8 +100,6 @@ export class UserRepository implements UserRepositoryInterface {
 
     const where: Prisma.UserWhereInput = {
       deletedAt: null,
-      // se tiver role de admin para excluir:
-      // role: { not: 'ADMIN' },
     };
 
     const OR: Prisma.UserWhereInput[] = [];
@@ -147,17 +147,17 @@ export class UserRepository implements UserRepositoryInterface {
     };
   }
 
-  private toDomain(raw: any): UserEntity {
+  private toDomain(entity: UserIterfaces): UserEntity {
     return new UserEntity({
-      id: raw.id,
-      name: raw.name,
-      registration: raw.registration,
-      email: raw.email,
-      password: raw.password,
-      isActive: raw.isActive,
-      createdAt: raw.createdAt,
-      updatedAt: raw.updatedAt,
-      deletedAt: raw.deletedAt,
+      id: entity.id,
+      name: entity.name,
+      registration: entity.registration,
+      email: entity.email,
+      password: entity.password,
+      isActive: entity.isActive,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
+      deletedAt: entity.deletedAt,
     });
   }
 }

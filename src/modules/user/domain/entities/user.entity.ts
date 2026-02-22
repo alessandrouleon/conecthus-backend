@@ -114,12 +114,12 @@ export class UserEntity {
     this._isActive = value;
   }
 
-  setUpdatedAt(value?: Date | null) {
-    this._updatedAt = value ?? new Date();
-  }
-  setDeletedAt(value?: Date | null) {
-    this._deletedAt = value ?? new Date();
-  }
+  // setUpdatedAt(value?: Date | null) {
+  //   this._updatedAt = value ?? new Date();
+  // }
+  // setDeletedAt(value?: Date | null) {
+  //   this._deletedAt = value ?? new Date();
+  // }
 
   toJSON(): UserToJSON {
     return {

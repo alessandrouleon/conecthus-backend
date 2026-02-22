@@ -24,7 +24,7 @@ export class UpdateUserUseCase {
   async execute(
     input: InputUpdateUserUseCaseDto,
   ): Promise<OutputUpdateUserUseCaseDto> {
-    const existingUser = await this.userRepository.findOneById(input.id);
+    const existingUser = await this.userRepository.findById(input.id);
 
     if (!existingUser) {
       throw new HttpException(

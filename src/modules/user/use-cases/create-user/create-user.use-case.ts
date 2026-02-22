@@ -49,7 +49,7 @@ export class CreateUserUseCase {
     email: string,
   ): Promise<void> {
     const [existingByRegistration, existingByEmail] = await Promise.all([
-      this.userRepository.findByUserRegistration(registration),
+      this.userRepository.findByRegistration(registration),
       this.userRepository.findByEmail(email),
     ]);
 

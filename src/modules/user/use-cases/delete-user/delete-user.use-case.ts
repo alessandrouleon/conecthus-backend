@@ -16,7 +16,7 @@ export class DeleteUserUseCase {
   ) {}
 
   async execute(id: string): Promise<void> {
-    const existsUser = await this.userRepository.findOneById(id);
+    const existsUser = await this.userRepository.findById(id);
 
     if (!existsUser) {
       throw new HttpException(
