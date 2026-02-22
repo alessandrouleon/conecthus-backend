@@ -6,11 +6,14 @@ import {
   Get,
   Param,
   Post,
+  Put,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dtos/create-user.dto';
+import { UpdateUserDto } from '../dtos/update-user.dto';
 import { CreateUserUseCase } from '../use-cases/create-user/create-user.use-case';
 import { DeleteUserUseCase } from '../use-cases/delete-user/delete-user.use-case';
 import { FindByIdUserUseCase } from '../use-cases/find-by-id-user/find-by-id-user.use-case';
+import { UpdateUserUseCase } from '../use-cases/update-user/update-user.use-case';
 
 //@ApiTags('Users')
 // @ApiBearerAuth('access-token')
@@ -20,6 +23,7 @@ export class UserController {
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly findByIdUserUseCase: FindByIdUserUseCase,
     private readonly deleteUserUseCase: DeleteUserUseCase,
+    private readonly updateUserUseCase: UpdateUserUseCase,
   ) {}
 
   // Apenas ADMIN pode criar usuários
@@ -38,26 +42,21 @@ export class UserController {
     }
   }
 
-  //   // ADMIN e MANAGER podem atualizar
-  //   @Put(':id')
+  @Put(':id')
   //   @ApiOperation({ summary: 'Atualizar usuário (USER)' })
   //   @ApiResponse({ status: 200, description: 'Usuário editado com sucesso' })
   //   @ApiResponse({ status: 400, description: 'Erro de validação' })
-  //   async update(
-  //     @Param('id') id: string,
-  //     @Body() input: UpdateUserDto,
-  //     @CurrentUser() currentUser: ICurrentUser,
-  //   ) {
-  //     try {
-  //       input.id = id;
-  //       return await this.userFacade.update(input);
-  //     } catch (e) {
-  //       if (e.name === 'DomainError') {
-  //         throw new BadRequestException(e.errors);
-  //       }
-  //       throw e;
-  //     }
-  //   }
+  async update(@Param('id') id: string, @Body() input: UpdateUserDto) {
+    try {
+      input.id = id;
+      return await this.updateUserUseCase.execute(input);
+    } catch (e) {
+      if (e.name === 'DomainError') {
+        throw new BadRequestException(e.errors);
+      }
+      throw e;
+    }
+  }
 
   //   // Qualquer usuário autenticado pode ver
   @Get(':id')

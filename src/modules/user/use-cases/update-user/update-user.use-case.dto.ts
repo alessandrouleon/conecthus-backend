@@ -5,6 +5,8 @@ export class InputUpdateUserUseCaseDto {
   email: string;
   password: string;
   isActive: boolean;
+  createdAt?: Date;
+  updatredAt?: Date;
 }
 
 export class OutputUpdateUserUseCaseDto {
@@ -13,6 +15,6 @@ export class OutputUpdateUserUseCaseDto {
   registration: string;
   email: string;
   isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | null;
+  updatedAt: Date | null;
 }

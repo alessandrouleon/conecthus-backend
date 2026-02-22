@@ -4,14 +4,15 @@ import { UserValidatorFactory } from '@/modules/user/domain/factory/user.validat
 import { randomUUID } from 'crypto';
 
 export type UserIterfaces = {
+  id?: string;
   name: string;
   registration: string;
   email: string;
   password: string;
   isActive: boolean;
-  createdAt: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
+  createdAt?: Date;
+  updatedAt?: Date | null;
+  deletedAt?: Date | null;
 };
 
 export type UserToJSON = {
@@ -38,7 +39,7 @@ export class UserEntity {
   protected notifications: Notification;
 
   constructor(private readonly props: UserIterfaces) {
-    this._id = randomUUID();
+    this._id = props.id ?? randomUUID();
     this._name = props.name;
     this._registration = props.registration;
     this._email = props.email;

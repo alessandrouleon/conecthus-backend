@@ -5,6 +5,7 @@ import { UserRepository } from './repository/user.repository';
 import { CreateUserUseCase } from './use-cases/create-user/create-user.use-case';
 import { DeleteUserUseCase } from './use-cases/delete-user/delete-user.use-case';
 import { FindByIdUserUseCase } from './use-cases/find-by-id-user/find-by-id-user.use-case';
+import { UpdateUserUseCase } from './use-cases/update-user/update-user.use-case';
 
 @Module({
   imports: [],
@@ -17,7 +18,7 @@ import { FindByIdUserUseCase } from './use-cases/find-by-id-user/find-by-id-user
 
     HashService,
     CreateUserUseCase,
-    // UpdateUserUseCase,
+    UpdateUserUseCase,
     FindByIdUserUseCase,
     // FindAllUserUseCase,
     DeleteUserUseCase,

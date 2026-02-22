@@ -12,8 +12,41 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
   constructor(private readonly repository: PrismaService) {}
-  update(entity: UserEntity): Promise<UserEntity> {
-    throw new Error('Method not implemented.');
+
+  async create(entity: UserEntity): Promise<UserEntity> {
+    const raw = await this.repository.user.create({
+      data: {
+        id: entity.id,
+        name: entity.name,
+        registration: entity.registration,
+        email: entity.email,
+        password: entity.password,
+        isActive: entity.isActive,
+        createdAt: entity.createdAt,
+        updatedAt: entity.updatedAt,
+        deletedAt: entity.deletedAt,
+      },
+    });
+
+    return this.toDomain(raw);
+  }
+
+  async update(entity: UserEntity): Promise<UserEntity> {
+    const raw = await this.repository.user.update({
+      where: { id: entity.id },
+      data: {
+        id: entity.id,
+        name: entity.name,
+        registration: entity.registration,
+        email: entity.email,
+        password: entity.password,
+        isActive: entity.isActive,
+        createdAt: entity.createdAt,
+        updatedAt: entity.updatedAt,
+        deletedAt: entity.deletedAt,
+      },
+    });
+    return this.toDomain(raw);
   }
   async delete(id: string): Promise<UserEntity> {
     const raw = await this.repository.user.update({
@@ -48,27 +81,10 @@ export class UserRepository implements UserRepositoryInterface {
   find(request: PageRequest<UserFilter>): Promise<PageResponse<UserEntity>> {
     throw new Error('Method not implemented.');
   }
-  async create(entity: UserEntity): Promise<UserEntity> {
-    const raw = await this.repository.user.create({
-      data: {
-        id: entity.id,
-        name: entity.name,
-        registration: entity.registration,
-        email: entity.email,
-        password: entity.password,
-        isActive: entity.isActive,
-        createdAt: entity.createdAt,
-        updatedAt: entity.updatedAt,
-        deletedAt: entity.deletedAt,
-      },
-    });
-
-    return this.toDomain(raw);
-  }
 
   private toDomain(raw: any): UserEntity {
     return new UserEntity({
-      // id: raw.id,
+      id: raw.id,
       name: raw.name,
       registration: raw.registration,
       email: raw.email,
