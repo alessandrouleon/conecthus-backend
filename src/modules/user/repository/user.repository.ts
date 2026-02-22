@@ -70,8 +70,8 @@ export class UserRepository implements UserRepositoryInterface {
   }
 
   async findByRegistration(registration: string): Promise<UserEntity | null> {
-    const user = await this.repository.user.findUnique({
-      where: { registration, deletedAt: null },
+    const user = await this.repository.user.findFirst({
+      where: { registration },
     });
     if (!user) return null;
     return this.toDomain(user);
@@ -79,7 +79,7 @@ export class UserRepository implements UserRepositoryInterface {
 
   async findByEmail(email: string): Promise<UserEntity | null> {
     const user = await this.repository.user.findUnique({
-      where: { email, deletedAt: null },
+      where: { email },
     });
     if (!user) return null;
     return this.toDomain(user);
@@ -88,14 +88,10 @@ export class UserRepository implements UserRepositoryInterface {
   async find(
     query: PageRequest<UserFilter>,
   ): Promise<PageResponse<UserEntity>> {
-    const {
-      filter = {},
-      order = 'desc',
-      orderBy = 'createdAt',
-      limit = 15,
-      page = 1,
-    } = query;
+    const { filter = {}, order = 'desc', orderBy = 'createdAt' } = query;
 
+    const limit = Number(query.limit) || 5;
+    const page = Number(query.page) || 1;
     const skip = (page - 1) * limit;
 
     const where: Prisma.UserWhereInput = {

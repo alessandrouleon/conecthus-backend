@@ -20,7 +20,7 @@ export class FindByIdUserUseCase {
 
     if (!user) {
       throw new HttpException(
-        UserMessageHelper.ID_NOT_EXIST,
+        UserMessageHelper.ID_NOT_FOUND,
         HttpStatus.BAD_REQUEST,
       );
     }

@@ -28,7 +28,7 @@ export class UpdateUserUseCase {
 
     if (!existingUser) {
       throw new HttpException(
-        UserMessageHelper.ID_NOT_EXIST,
+        UserMessageHelper.ID_NOT_FOUND,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -40,11 +40,23 @@ export class UpdateUserUseCase {
       );
     }
 
+    if (input && input.registration !== existingUser.registration) {
+      const existeRegistration = await this.userRepository.findByRegistration(
+        input.registration,
+      );
+      if (existeRegistration) {
+        throw new HttpException(
+          UserMessageHelper.REGISTRATION_ALREADY_EXISTS_FOR_UPDATE,
+          HttpStatus.CONFLICT,
+        );
+      }
+    }
+
     if (input && input.email !== existingUser.email) {
       const getEmail = await this.userRepository.findByEmail(input.email);
       if (getEmail) {
         throw new HttpException(
-          UserMessageHelper.EXIST_EMAIL_FOR_UPDATE,
+          UserMessageHelper.EMAIL_ALREADY_EXISTS_FOR_UPDATE,
           HttpStatus.CONFLICT,
         );
       }

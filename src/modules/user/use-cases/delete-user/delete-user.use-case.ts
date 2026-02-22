@@ -20,7 +20,7 @@ export class DeleteUserUseCase {
 
     if (!existsUser) {
       throw new HttpException(
-        UserMessageHelper.ID_NOT_EXIST_FOR_DELETED,
+        UserMessageHelper.ID_NOT_FOUND_FOR_DELETE,
         HttpStatus.BAD_REQUEST,
       );
     }

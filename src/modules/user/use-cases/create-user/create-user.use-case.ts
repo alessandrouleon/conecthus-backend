@@ -26,8 +26,28 @@ export class CreateUserUseCase {
   async execute(
     input: InputCreateUserUseCaseDto,
   ): Promise<OutputCreateUserUseCaseDto> {
-    await this.ensureUserIsUnique(input.registration, input.email);
+    const [existsRegistration, existsEmail] = await Promise.all([
+      this.userRepository.findByRegistration(input.registration),
+      this.userRepository.findByEmail(input.email),
+    ]);
 
+    if (existsRegistration) {
+      // if (existsRegistration.registration === input.registration) {
+      throw new HttpException(
+        UserMessageHelper.REGISTRATION_ALREADY_EXISTS,
+        HttpStatus.CONFLICT,
+      );
+      //  }
+    }
+
+    if (existsEmail) {
+      // if (existsEmail.email === input.email) {
+      throw new HttpException(
+        UserMessageHelper.EMAIL_ALREADY_EXISTS,
+        HttpStatus.CONFLICT,
+      );
+      //}
+    }
     const user = UserFactory.createUserFactory({
       ...input,
       createdAt: new Date(),
@@ -42,29 +62,5 @@ export class CreateUserUseCase {
     );
 
     return userCreated.toJSON();
-  }
-
-  private async ensureUserIsUnique(
-    registration: string,
-    email: string,
-  ): Promise<void> {
-    const [existingByRegistration, existingByEmail] = await Promise.all([
-      this.userRepository.findByRegistration(registration),
-      this.userRepository.findByEmail(email),
-    ]);
-
-    if (existingByRegistration) {
-      throw new HttpException(
-        UserMessageHelper.EXIST_REGISTRATION,
-        HttpStatus.CONFLICT,
-      );
-    }
-
-    if (existingByEmail) {
-      throw new HttpException(
-        UserMessageHelper.EXIST_EMAIL,
-        HttpStatus.CONFLICT,
-      );
-    }
   }
 }
