@@ -1,0 +1,135 @@
+import { Notification } from '@/@shared/domain/notification/notification';
+import NotificationErros from '@/@shared/domain/notification/notification.error';
+import { UserValidatorFactory } from '@/modules/user/domain/factory/user.validator.factory';
+import { randomUUID } from 'crypto';
+
+export type UserIterfaces = {
+  name: string;
+  registration: string;
+  email: string;
+  password: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
+};
+
+export type UserToJSON = {
+  id: string;
+  name: string;
+  registration: string;
+  email: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
+};
+
+export class UserEntity {
+  private _id: string;
+  private _name: string;
+  private _registration: string;
+  private _email: string;
+  private _password: string;
+  private _isActive: boolean;
+  private _updatedAt: Date;
+  private _deletedAt: Date | null;
+  readonly createdAt: Date;
+  protected notifications: Notification;
+
+  constructor(private readonly props: UserIterfaces) {
+    this._id = randomUUID();
+    this._name = props.name;
+    this._registration = props.registration;
+    this._email = props.email;
+    this._password = props.password;
+    this._isActive = props.isActive ?? true;
+    this.createdAt = props.createdAt ?? new Date();
+    this._updatedAt = props.updatedAt ?? new Date();
+    this._deletedAt = props.deletedAt ?? null;
+
+    this.notifications = new Notification();
+
+    this.validate();
+
+    if (this.notifications.hasErrors()) {
+      throw new NotificationErros(this.notifications.getErrors());
+    }
+  }
+
+  validate(): void {
+    UserValidatorFactory.create().validate(this);
+  }
+
+  get id() {
+    return this._id;
+  }
+  get name() {
+    return this._name;
+  }
+  get registration() {
+    return this._registration;
+  }
+  get email() {
+    return this._email;
+  }
+  get password() {
+    return this._password;
+  }
+  get isActive() {
+    return this._isActive;
+  }
+  get updatedAt() {
+    return this._updatedAt;
+  }
+  get deletedAt() {
+    return this._deletedAt;
+  }
+  get notification() {
+    return this.notifications;
+  }
+
+  set id(value: string) {
+    this._id = value.trim();
+    this.validate();
+  }
+  set name(value: string) {
+    this._name = value.trim();
+    this.validate();
+  }
+  set username(value: string) {
+    this._registration = value.trim();
+    this.validate();
+  }
+  set email(value: string) {
+    this._email = value.trim();
+    this.validate();
+  }
+  set password(value: string) {
+    this._password = value.trim();
+    this.validate();
+  }
+  set isActive(value: boolean) {
+    this._isActive = value;
+  }
+
+  setUpdatedAt(value?: Date) {
+    this._updatedAt = value ?? new Date();
+  }
+  setDeletedAt(value?: Date | null) {
+    this._deletedAt = value ?? new Date();
+  }
+
+  toJSON(): UserToJSON {
+    return {
+      id: this.id,
+      name: this.name,
+      registration: this.registration,
+      email: this.email,
+      isActive: this.isActive,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+      deletedAt: this.deletedAt,
+    };
+  }
+}
