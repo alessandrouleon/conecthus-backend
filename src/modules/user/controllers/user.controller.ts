@@ -9,9 +9,17 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateUserDto } from '../dtos/create-user.dto';
+import { FindUsersQueryDto } from '../dtos/find-users-query.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
+import { UserFilterDto } from '../dtos/user.filter.dto';
 import { CreateUserUseCase } from '../use-cases/create-user/create-user.use-case';
 import { DeleteUserUseCase } from '../use-cases/delete-user/delete-user.use-case';
 import { FindAllUserUseCase } from '../use-cases/find-all-user/find-all-user.use-case';
@@ -78,22 +86,15 @@ export class UserController {
 
   @Get()
   @ApiOperation({ summary: 'LISTA DE USUARIOS' })
-  // @ApiQuery({
-  //   name: 'filter',
-  //   required: false,
-  //   style: 'deepObject',
-  //   explode: true,
-  //   type: UserFilterDto,
-  // })
-  async find(@Query() query: any) {
-    const filter: any = {};
-    for (const key in query) {
-      if (key.startsWith('filter[') && key.endsWith(']')) {
-        const field = key.slice(7, -1);
-        filter[field] = query[key];
-      }
-    }
-    return this.findAllUserUseCase.execute({ ...query, filter });
+  @ApiQuery({
+    name: 'filter',
+    required: false,
+    style: 'deepObject',
+    explode: true,
+    type: UserFilterDto,
+  })
+  async find(@Query() query: FindUsersQueryDto) {
+    return this.findAllUserUseCase.execute(query);
   }
 
   @Delete(':id')

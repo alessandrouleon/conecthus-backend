@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import * as qs from 'qs';
 import { setupSwagger } from './@shared/docs/swagger/swagger.setup';
 import { DomainExceptionFilter } from './@shared/domain/exception/exception.filter';
 import { AppModule } from './app.module';
@@ -8,6 +9,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  app.set('query parser', (str: string) => qs.parse(str));
   // Pipes e filtros
   app.useGlobalPipes(
     new ValidationPipe({
