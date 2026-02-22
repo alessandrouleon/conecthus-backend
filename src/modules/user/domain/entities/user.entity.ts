@@ -21,7 +21,7 @@ export type UserToJSON = {
   email: string;
   isActive: boolean;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt: Date | null;
   deletedAt: Date | null;
 };
 
@@ -32,7 +32,7 @@ export class UserEntity {
   private _email: string;
   private _password: string;
   private _isActive: boolean;
-  private _updatedAt: Date;
+  private _updatedAt: Date | null;
   private _deletedAt: Date | null;
   readonly createdAt: Date;
   protected notifications: Notification;
@@ -45,7 +45,7 @@ export class UserEntity {
     this._password = props.password;
     this._isActive = props.isActive ?? true;
     this.createdAt = props.createdAt ?? new Date();
-    this._updatedAt = props.updatedAt ?? new Date();
+    this._updatedAt = props.updatedAt ?? null;
     this._deletedAt = props.deletedAt ?? null;
 
     this.notifications = new Notification();
@@ -113,7 +113,7 @@ export class UserEntity {
     this._isActive = value;
   }
 
-  setUpdatedAt(value?: Date) {
+  setUpdatedAt(value?: Date | null) {
     this._updatedAt = value ?? new Date();
   }
   setDeletedAt(value?: Date | null) {

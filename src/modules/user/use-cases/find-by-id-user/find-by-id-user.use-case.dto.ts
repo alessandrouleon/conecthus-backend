@@ -5,5 +5,6 @@ export class OutputFindByIdUserUseCaseDto {
   email: string;
   isActive: boolean;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }

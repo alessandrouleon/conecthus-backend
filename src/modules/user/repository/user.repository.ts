@@ -15,11 +15,19 @@ export class UserRepository implements UserRepositoryInterface {
   update(entity: UserEntity): Promise<UserEntity> {
     throw new Error('Method not implemented.');
   }
-  delete(id: string): Promise<UserEntity> {
-    throw new Error('Method not implemented.');
+  async delete(id: string): Promise<UserEntity> {
+    const raw = await this.repository.user.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+    return this.toDomain(raw);
   }
-  findOneById(id: string): Promise<UserEntity | null> {
-    throw new Error('Method not implemented.');
+  async findOneById(id: string): Promise<UserEntity | null> {
+    const raw = await this.repository.user.findUnique({
+      where: { id, deletedAt: null },
+    });
+    if (!raw) return null;
+    return this.toDomain(raw);
   }
   async findByUserRegistration(
     registration: string,

@@ -13,5 +13,6 @@ export class OutputCreateUserUseCaseDto {
   email: string;
   isActive: boolean;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }

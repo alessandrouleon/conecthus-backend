@@ -1,12 +1,26 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { CreateUserUseCase } from '../use-cases/create-user/create-user.use-case';
+import { DeleteUserUseCase } from '../use-cases/delete-user/delete-user.use-case';
+import { FindByIdUserUseCase } from '../use-cases/find-by-id-user/find-by-id-user.use-case';
 
 //@ApiTags('Users')
 // @ApiBearerAuth('access-token')
 @Controller('users')
 export class UserController {
-  constructor(private readonly createUserUseCase: CreateUserUseCase) {}
+  constructor(
+    private readonly createUserUseCase: CreateUserUseCase,
+    private readonly findByIdUserUseCase: FindByIdUserUseCase,
+    private readonly deleteUserUseCase: DeleteUserUseCase,
+  ) {}
 
   // Apenas ADMIN pode criar usuários
   @Post()
@@ -46,22 +60,21 @@ export class UserController {
   //   }
 
   //   // Qualquer usuário autenticado pode ver
-  //   @Get(':id')
-  //   @Roles(ROLES.ADMIN, ROLES.CLIENT_ADMIN, ROLES.USER)
+  @Get(':id')
   //   @ApiParam({ name: 'id', type: String })
   //   @ApiOperation({ summary: 'Buscar usuário por ID' })
   //   @ApiResponse({ status: 200, description: 'Usuário encontrado' })
   //   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
-  //   async findById(@Param('id') id: string) {
-  //     try {
-  //       return await this.userFacade.findById(id);
-  //     } catch (e) {
-  //       if (e.name === 'DomainError') {
-  //         throw new BadRequestException(e.errors);
-  //       }
-  //       throw e;
-  //     }
-  //   }
+  async findById(@Param('id') id: string) {
+    try {
+      return await this.findByIdUserUseCase.execute(id);
+    } catch (e) {
+      if (e.name === 'DomainError') {
+        throw new BadRequestException(e.errors);
+      }
+      throw e;
+    }
+  }
 
   //   // Apenas ADMIN pode listar todos
   //   @Get()
@@ -80,18 +93,17 @@ export class UserController {
   //     return this.userFacade.find({ ...query, filter });
   //   }
 
-  //   // Apenas ADMIN pode deletar
-  //   @Delete(':id')
-  //   @Roles(ROLES.ADMIN)
-  //   @ApiParam({ name: 'id', type: String })
-  //   @ApiResponse({ status: 204, description: 'Usuário removido com sucesso' })
-  //   async delete(@Param('id') id: string): Promise<void> {
-  //     try {
-  //       return await this.userFacade.delete(id);
-  //     } catch (e) {
-  //       if (e.name === 'DomainError') {
-  //         throw new BadRequestException(e.errors);
-  //       }
-  //       throw e;
-  //     }
+  @Delete(':id')
+  // @ApiParam({ name: 'id', type: String })
+  // @ApiResponse({ status: 204, description: 'Usuário removido com sucesso' })
+  async delete(@Param('id') id: string): Promise<void> {
+    try {
+      return await this.deleteUserUseCase.execute(id);
+    } catch (e) {
+      if (e.name === 'DomainError') {
+        throw new BadRequestException(e.errors);
+      }
+      throw e;
+    }
+  }
 }
