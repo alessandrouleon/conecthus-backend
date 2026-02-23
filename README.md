@@ -115,9 +115,39 @@ modelagem e acesso aos dados.
 
 ---
 
-## Execução do Projeto
+## 🚀 Repositório da API
 
-Para subir o ambiente completo:
+### API - Setup do Projeto
+
+#### Pré-requisitos
+
+Antes de começar, você precisa ter instalado na sua máquina:
+
+Docker
+
+Git
+
+🔗 **GitHub:**  
+[conecthus-backend](https://github.com/alessandrouleon/conecthus-backend)
+
+### Como executar a API na sua máquina
+
+- [1] Acesse a URL do projeto.
+- [2] No repositório, clique no botão "Code".
+- [3] Na opção HTTPS, copie a URL exibida.
+- [4] Clone o projeto na pasta desejada do seu computador:
+
+- - git clone URL_COPIADA_AQUI
+
+- [5] Antes de executar o projeto, renomeie o arquivo:
+
+- - .env.example
+
+  #### para:
+
+- - .env
+
+#### Após configurar o .env, execute o comando Docker para subir a aplicação.
 
 docker compose up -d --build
 
@@ -166,11 +196,6 @@ POST /users GET /users GET /users/:id PUT /users/:id DELETE /users/:id
 - Documentação
 
 ---
-
-## 🚀 Repositório da API
-
-🔗 **GitHub:**  
-[conecthus-backend](https://github.com/alessandrouleon/conecthus-backend)
 
 ## Autor
 
