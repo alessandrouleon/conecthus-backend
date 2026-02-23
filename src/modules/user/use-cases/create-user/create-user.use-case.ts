@@ -32,21 +32,17 @@ export class CreateUserUseCase {
     ]);
 
     if (existsRegistration) {
-      // if (existsRegistration.registration === input.registration) {
       throw new HttpException(
         UserMessageHelper.REGISTRATION_ALREADY_EXISTS,
         HttpStatus.CONFLICT,
       );
-      //  }
     }
 
     if (existsEmail) {
-      // if (existsEmail.email === input.email) {
       throw new HttpException(
         UserMessageHelper.EMAIL_ALREADY_EXISTS,
         HttpStatus.CONFLICT,
       );
-      //}
     }
     const user = UserFactory.createUserFactory({
       ...input,
