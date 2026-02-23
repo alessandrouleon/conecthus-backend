@@ -1,17 +1,15 @@
 # API RESTful - CRUD de Usuarios
 
-## Sobre o Projeto
+Este projeto foi desenvolvido como desafio técnico, aplicando princípios de Clean Architecture, DDD e SOLID utilizando NestJS e MySQL.
 
-Este projeto consiste no desenvolvimento de uma API RESTful para
-gerenciamento de usuários, implementando operações de CRUD (Create,
-Read, Update, Delete), utilizando NestJS e banco de dados relacional.
+O objetivo foi construir uma API escalável, organizada e desacoplada, com separação clara entre domínio e infraestrutura.
 
-Requisitos atendidos: - API RESTful com NestJS - CRUD completo de
-usuários - Banco de dados relacional (MySQL) - Documentação com Swagger
-UI.
+## Decisões Arquiteturais
 
-Diferenciais técnicos implementados: - Clean Architecture - DDD -
-SOLID - Docker - Prisma ORM
+- Cada caso de uso foi isolado para evitar dependência entre regras de negócio.
+- O domínio não depende do Prisma, apenas de interfaces.
+- O soft delete foi escolhido para manter histórico de dados.
+- Validações de regra de negócio estão no domínio, não na camada HTTP.
 
 ---
 
@@ -22,15 +20,13 @@ SOLID - Docker - Prisma ORM
 - Prisma ORM
 - MySQL
 - Docker
-- Swagger (OpenAPI)
+- Swagger UI
 
 ---
 
 ## Estrutura do Projeto
 
 Organização modular baseada em separação de responsabilidades.
-
-Pastas principais:
 
 ```
 src/
@@ -77,11 +73,7 @@ entrypoint.sh
 
 ## Explicação da Estrutura
 
-### @shared
-
-#### Contém recursos reutilizáveis da aplicação:
-
-### config
+### @shared/config
 
 - Configurações globais
 - Instância do Prisma
@@ -90,7 +82,7 @@ entrypoint.sh
 - Paginação
 - Funções utilitárias
 
-### domain
+### @shared/domain
 
 - Contém a camada central da aplicação:
 - Exceções customizadas
@@ -127,29 +119,17 @@ Docker
 
 Git
 
+---
+
 🔗 **GitHub:**  
 [conecthus-backend](https://github.com/alessandrouleon/conecthus-backend)
 
 ### Como executar a API na sua máquina
 
-- [1] Acesse a URL do projeto.
-- [2] No repositório, clique no botão "Code".
-- [3] Na opção HTTPS, copie a URL exibida.
-- [4] Clone o projeto na pasta desejada do seu computador:
-
-- - git clone URL_COPIADA_AQUI
-
-- [5] Antes de executar o projeto, renomeie o arquivo:
-
-- - .env.example
-
-  #### para:
-
-- - .env
-
-#### Após configurar o .env, execute o comando Docker para subir a aplicação.
-
-docker compose up -d --build
+- git clone https://github.com/alessandrouleon/conecthus-backend.git
+- cd conecthus-backend
+- cp .env.example .env
+- docker compose up -d --build
 
 Esse comando sobe: - Container do MySQL - Container da aplicação NestJS
 
@@ -165,14 +145,18 @@ http://localhost:5000/user-docs/
 
 ## Endpoints
 
-POST /users GET /users GET /users/:id PUT /users/:id DELETE /users/:id
+- POST /users
+- GET /users
+- GET /users/:id
+- PUT /users/:id
+- DELETE /users/:id
 
 ---
 
 ### Requisitos para Criar e Atualizar usuários
 
 - POST: http://localhost:5000/users
-- PUT: http://localhost:5000/users/ID
+- PUT: http://localhost:5000/users/id
 
 - Matrícula (registration): é única
 - Email: é único
