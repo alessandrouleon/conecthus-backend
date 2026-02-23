@@ -1,27 +1,38 @@
-FROM node:lts-alpine as production
-
-ARG NODE_ENV
-ARG PORT
-
-ENV NODE_ENV=${NODE_ENV}
-ENV PORT=${DOCKER_PORT}
+FROM node:lts-slim AS builder
 
 WORKDIR /usr/app
 
-ENV TZ=America/Manaus
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+COPY package*.json ./
+COPY prisma ./prisma/
 
+RUN npm install --silent
+
+COPY . .
+
+RUN npx prisma generate
+RUN npm run build
+
+# --- Imagem final ---
+FROM node:lts-slim AS production
+
+RUN apt-get update && apt-get install -y openssl tzdata --no-install-recommends \
+    && ln -sf /usr/share/zoneinfo/America/Manaus /etc/localtime \
+    && echo "America/Manaus" > /etc/timezone \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /usr/app
 
 COPY package*.json ./
+COPY prisma ./prisma/
 
 RUN npm install --only=production --silent
 
-COPY . .
-COPY ./prisma prisma
+COPY --from=builder /usr/app/dist ./dist
+COPY --from=builder /usr/app/node_modules/.prisma ./node_modules/.prisma
 
-RUN npx prisma generate
-RUN npx prisma migrate dev
+COPY entrypoint.sh ./
+RUN chmod +x entrypoint.sh
 
-EXPOSE ${PORT}
+EXPOSE 4050
 
-CMD ["node", "dist/main"]
+CMD ["./entrypoint.sh"]

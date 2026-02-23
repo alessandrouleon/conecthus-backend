@@ -3,7 +3,7 @@
 /node_modules
 /build
 /dados_mysql
-/prisma/migrations*
+
 
 # Logs
 logs

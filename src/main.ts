@@ -26,7 +26,7 @@ async function bootstrap() {
     origin: '*',
   });
 
-  const port = process.env.BACKEND_PORT || 4000;
+  const port = process.env.PORT || process.env.BACKEND_PORT || 4000;
 
   setupSwagger(app);
 
